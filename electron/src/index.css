@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+:root {
+  --pulse-bg: #0a0a0f;
+  --pulse-surface: #13131a;
+  --pulse-border: #1e1e2a;
+  --pulse-text: #e4e4e7;
+  --pulse-text-dim: #71717a;
+  --pulse-accent: #6366f1;
+  --pulse-accent-glow: rgba(99, 102, 241, 0.3);
+  --pulse-green: #22c55e;
+  --pulse-red: #ef4444;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--pulse-bg);
+  color: var(--pulse-text);
+  overflow: hidden;
+  height: 100vh;
+  -webkit-app-region: drag;
+}
+
+button, input, a {
+  -webkit-app-region: no-drag;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Voice Orb animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--pulse-accent-glow), 0 0 40px var(--pulse-accent-glow);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--pulse-accent-glow), 0 0 80px var(--pulse-accent-glow);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse-listening {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.4), 0 0 60px rgba(34, 197, 94, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(34, 197, 94, 0.6), 0 0 100px rgba(34, 197, 94, 0.3);
+    transform: scale(1.08);
+  }
+}
+
+@keyframes pulse-thinking {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

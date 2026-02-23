@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+electron/node_modules/
+
+# Build artifacts
+electron/out/
+electron/dist/
+electron/.webpack/
+*.pyc
+__pycache__/
+*.egg-info/
+
+# Environment
+.env
+backend/.env
+*.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+
+# Misc
+.specstory/
+.cursorindexingignore
+*.log
