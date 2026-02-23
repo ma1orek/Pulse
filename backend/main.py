@@ -216,7 +216,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, session_id: str
 
     try:
         async with client.aio.live.connect(
-            model="gemini-2.0-flash-live-001",
+            model="gemini-2.5-flash-native-audio-latest",
             config=config,
         ) as session:
 
