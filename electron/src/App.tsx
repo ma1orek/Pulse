@@ -43,35 +43,51 @@ export default function App() {
     };
 
     ws.onmessage = async (event) => {
+      // Binary data = audio response from Gemini
+      if (event.data instanceof Blob) {
+        const buf = await event.data.arrayBuffer();
+        playAudioBuffer(buf);
+        return;
+      }
+
       try {
         const msg = JSON.parse(event.data);
 
         if (msg.type === 'action') {
-          addLog('action', `Executing: ${msg.action} ${msg.url || msg.text || ''}`);
+          addLog('action', `${msg.action} ${msg.url || msg.text || ''}`);
 
-          if (msg.action === 'navigate') {
-            await window.pulse.navigate(msg.url);
-          } else if (msg.action === 'new_tab') {
-            await window.pulse.createTab(msg.url || '');
-          } else if (msg.action === 'close_tab') {
-            if (activeTabId) await window.pulse.closeTab(activeTabId);
-          } else {
-            await window.pulse.executeAction(msg);
+          let result: any = { status: 'ok' };
+          try {
+            if (msg.action === 'navigate') {
+              await window.pulse.navigate(msg.url);
+              result = { status: 'ok', navigated_to: msg.url };
+            } else if (msg.action === 'new_tab') {
+              const tab = await window.pulse.createTab(msg.url || '');
+              result = { status: 'ok', tab_id: tab.id };
+            } else if (msg.action === 'close_tab') {
+              if (activeTabId) await window.pulse.closeTab(activeTabId);
+              result = { status: 'ok' };
+            } else {
+              result = await window.pulse.executeAction(msg);
+            }
+          } catch (err: any) {
+            result = { status: 'error', message: err.message || 'Action failed' };
           }
+
+          // Send result back to backend so Gemini gets the tool response
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'action_result', ...result }));
+          }
+
         } else if (msg.type === 'transcript') {
           addLog('agent', msg.text);
         } else if (msg.type === 'status') {
           setAgentState(msg.state);
-        } else if (msg.type === 'audio') {
-          // Play audio response (base64 PCM)
-          playAudio(msg.data);
+        } else if (msg.type === 'error') {
+          addLog('error', msg.message);
         }
       } catch {
-        // Binary audio data
-        if (event.data instanceof Blob) {
-          const buf = await event.data.arrayBuffer();
-          playAudioBuffer(buf);
-        }
+        // Ignore parse errors
       }
     };
 
